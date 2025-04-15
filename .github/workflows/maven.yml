@@ -1,0 +1,42 @@
+name: CI/CD Pipeline for Spring Boot Java 17 ioco challenge backend
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Install Dependencies
+        run: mvn clean install
+
+      - name: Build with Maven
+        run: mvn package
+
+      - name: Run tests
+        run: mvn test
+
+  deploy:
+    needs: build_and_test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Deploy to server (example)
+        run: |
+          echo "Deploying to production server..."
+          # ssh user@server "cd /opt/app && git pull && mvn clean install && mvn package && systemctl restart app"
